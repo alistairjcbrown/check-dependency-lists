@@ -11,11 +11,7 @@ var plugin = gulpPlugin({
   }
 });
 
-gulp.task('dependency-lint', () => {
-  return checkDependencyLists({
-    rootDir: '../'
-  });
-});
+gulp.task('dependency-lint', () => checkDependencyLists({ rootDir: '../' }));
 
 gulp.task('file-path-lint', () => {
   return gulp.src(['./**/*.*', '!./node_modules/**/*'])
