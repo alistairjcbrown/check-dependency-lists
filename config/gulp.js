@@ -27,7 +27,14 @@ gulp.task('eslint', () => {
              .pipe(plugin.eslint.format().on('data', _.noop));
 });
 
+gulp.task('transpile', () => {
+    return gulp.src('./src/**/*.js')
+               .pipe(plugin.babel())
+               .pipe(gulp.dest('./dist'));
+});
+
 // ---
 
 gulp.task('lint', [ 'dependency-lint', 'file-path-lint', 'eslint' ]);
-gulp.task('default', [ 'lint' ]);
+gulp.task('build', [ 'lint', 'transpile' ])
+gulp.task('default', [ 'build' ]);
