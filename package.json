@@ -1,0 +1,23 @@
+{
+  "name": "check-dependency-lists",
+  "version": "1.0.0",
+  "description": "Check dependency lists are all in sync",
+  "author": "Alistair Brown <npm@alistairjcbrown.com> (http://alistairjcbrown.com/)",
+  "main": "index.js",
+  "license": "ISC",
+ "repository": {
+    "type": "git",
+    "url": "https://github.com/alistairjcbrown/check-dependency-lists"
+  },
+  "bugs": {
+    "url": "https://github.com/alistairjcbrown/check-dependency-lists/issues"
+  },
+  "homepage": "https://github.com/alistairjcbrown/check-dependency-lists#readme",
+  "dependencies": {
+    "babel": "~5.8.23",
+    "babel-core": "~5.8.23",
+    "promise": "~7.0.4",
+    "semver": "~5.0.1",
+    "underscore": "~1.8.3"
+  }
+}
