@@ -1,6 +1,6 @@
 {
   "name": "check-dependency-lists",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Check dependency lists are all in sync",
   "author": "Alistair Brown <npm@alistairjcbrown.com> (http://alistairjcbrown.com/)",
   "main": "index.js",
@@ -17,6 +17,20 @@
     "lint": "gulp lint",
     "check": "npm-check --skip-unused"
   },
+  "keywords": [
+    "gulp",
+    "gulpplugin",
+    "linting",
+    "lint",
+    "dependency",
+    "dependencies",
+    "npm",
+    "package",
+    "package.json",
+    "shrinkwrap",
+    "npm-shrinkwrap",
+    "verions"
+  ],
   "dependencies": {
     "babel": "~5.8.23",
     "babel-core": "~5.8.23",
