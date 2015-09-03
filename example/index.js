@@ -1,5 +1,5 @@
 var checkDependencyLists = require('../');
 
 checkDependencyLists({
-  rootDir: '../'
+  rootDir: './'
 });

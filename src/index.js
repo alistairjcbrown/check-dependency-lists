@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import Promise from 'promise';
 import semver from 'semver';
 import {
   requireFile, runCommand,
@@ -57,9 +58,10 @@ const checkDependencyLists = ([ packagejson, npmshrinkwrap, installed ]) => {
 export default (opts) => {
   let rootPath = _.isObject(opts) ? opts.rootDir : '.';
 
-  if (rootPath.endsWith('/')) {
+  if (rootPath.slice(-1) === '/') {
     rootPath = rootPath.slice(0, -1);
   }
+  rootPath = process.cwd() + '/' + rootPath;
 
   Promise.all([
     requireFile(`${rootPath}/package.json`),

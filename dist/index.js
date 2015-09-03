@@ -12,6 +12,10 @@ var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
 
+var _promise = require('promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
 var _semver = require('semver');
 
 var _semver2 = _interopRequireDefault(_semver);
@@ -79,11 +83,12 @@ var checkDependencyLists = function checkDependencyLists(_ref) {
 exports['default'] = function (opts) {
   var rootPath = _underscore2['default'].isObject(opts) ? opts.rootDir : '.';
 
-  if (rootPath.endsWith('/')) {
+  if (rootPath.slice(-1) === '/') {
     rootPath = rootPath.slice(0, -1);
   }
+  rootPath = process.cwd() + '/' + rootPath;
 
-  Promise.all([(0, _utils.requireFile)(rootPath + '/package.json'), (0, _utils.requireFile)(rootPath + '/npm-shrinkwrap.json'), (0, _utils.runCommand)('npm ls --depth=0 --json')]).then(checkDependencyLists)['catch'](function (err) {
+  _promise2['default'].all([(0, _utils.requireFile)(rootPath + '/package.json'), (0, _utils.requireFile)(rootPath + '/npm-shrinkwrap.json'), (0, _utils.runCommand)('npm ls --depth=0 --json')]).then(checkDependencyLists)['catch'](function (err) {
     console.log(err);
     process.exit(1);
   });
