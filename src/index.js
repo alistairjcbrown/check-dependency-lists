@@ -29,6 +29,7 @@ const getBadVersionDependencies = (dependencies) => {
 };
 
 const checkDependencyLists = ([ packagejson, npmshrinkwrap, installed ]) => {
+  let fail = false;
   const packagejsonDependencies = _.extend({}, packagejson.dependencies, packagejson.devDependencies);
   const npmshrinkwrapDependencies = flattenDependencySource(npmshrinkwrap);
   const installedDependencies = flattenDependencySource(installed);
@@ -36,19 +37,25 @@ const checkDependencyLists = ([ packagejson, npmshrinkwrap, installed ]) => {
 
   const missing = getMissingDepdencies(dependencyList);
   if (missing.length > 0) {
-    console.log('There are dependencies which are not present in all sources');
+    console.log('There are dependencies which are not present in all dependency lists');
     console.log(JSON.stringify(missing, null, 4));
+    fail = true;
   }
 
   const badVersion = getBadVersionDependencies(dependencyList);
   if (badVersion.length > 0) {
-    console.log('There are dependencies which do not satisfy the version range in packagejson.json');
+    console.log('There are dependencies which do not satisfy the version range set in the "package.json" file');
     console.log(JSON.stringify(badVersion, null, 4));
+    fail = true;
+  }
+
+  if (fail) {
+    throw new Error('Dependency check failed');
   }
 };
 
-export default ({ rootDir }) => {
-  let rootPath = rootDir || '.';
+export default (opts) => {
+  let rootPath = _.isObject(opts) ? opts.rootDir : '.';
 
   if (rootPath.endsWith('/')) {
     rootPath = rootPath.slice(0, -1);
@@ -60,6 +67,6 @@ export default ({ rootDir }) => {
     runCommand('npm ls --depth=0 --json')
   ]).then(checkDependencyLists).catch((err) => {
     console.log(err);
-    throw new Error(err);
+    process.exit(1);
   });
 };
