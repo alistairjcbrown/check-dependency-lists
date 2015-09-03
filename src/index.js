@@ -3,11 +3,11 @@ import semver from 'semver';
 import {
   requireFile, runCommand,
   flattenDependencySource,
-  generateDependencyObject, generateDependencyList
+  generateDependencyList
 } from './utils';
 
-var getMissingDepdencies = (dependencies) => {
-  return _.reduce(dependencies, function(missing, dependency) {
+const getMissingDepdencies = (dependencies) => {
+  return _.reduce(dependencies, (missing, dependency) => {
     if (!_.every(dependency.presence, _.identity)) {
       missing.push(dependency);
     }
@@ -15,12 +15,12 @@ var getMissingDepdencies = (dependencies) => {
   }, []);
 };
 
-var getBadVersionDependencies = (dependencies) => {
-  var missing = getMissingDepdencies(dependencies);
-  var validDependencies = _.difference(dependencies, missing);
+const getBadVersionDependencies = (dependencies) => {
+  const missing = getMissingDepdencies(dependencies);
+  const validDependencies = _.difference(dependencies, missing);
 
-  return _.reduce(validDependencies, function(badVersions, dependency) {
-    var { version: { packagejson, installed, npmshrinkwrap } } = dependency;
+  return _.reduce(validDependencies, (badVersions, dependency) => {
+    const { version: { packagejson, installed, npmshrinkwrap } } = dependency;
     if (!semver.satisfies(installed, packagejson) || !semver.satisfies(npmshrinkwrap, packagejson)) {
       badVersions.push(dependency);
     }
@@ -28,40 +28,35 @@ var getBadVersionDependencies = (dependencies) => {
   }, []);
 };
 
-var checkDependencyLists = ([ packagejson, npmshrinkwrap, installed ]) => {
-  var packagejsonDependencies = _.extend({}, packagejson.dependencies, packagejson.devDependencies);
-  var npmshrinkwrapDependencies = flattenDependencySource(npmshrinkwrap);
-  var installedDependencies = flattenDependencySource(installed);
+const checkDependencyLists = ([ packagejson, npmshrinkwrap, installed ]) => {
+  const packagejsonDependencies = _.extend({}, packagejson.dependencies, packagejson.devDependencies);
+  const npmshrinkwrapDependencies = flattenDependencySource(npmshrinkwrap);
+  const installedDependencies = flattenDependencySource(installed);
+  const dependencyList = generateDependencyList([ packagejsonDependencies, npmshrinkwrapDependencies, installedDependencies ]);
 
-  var dependencyList = generateDependencyList([ packagejsonDependencies, npmshrinkwrapDependencies, installedDependencies ]);
-
-  // -------------
-
-  var missing = getMissingDepdencies(dependencyList);
+  const missing = getMissingDepdencies(dependencyList);
   if (missing.length > 0) {
     console.log('There are dependencies which are not present in all sources');
     console.log(JSON.stringify(missing, null, 4));
   }
 
-  // -------------
-
-  var badVersion = getBadVersionDependencies(dependencyList);
+  const badVersion = getBadVersionDependencies(dependencyList);
   if (badVersion.length > 0) {
     console.log('There are dependencies which do not satisfy the version range in packagejson.json');
     console.log(JSON.stringify(badVersion, null, 4));
   }
 };
 
-export default function({ rootDir }) {
-  rootDir = rootDir || '.';
+export default ({ rootDir }) => {
+  let rootPath = rootDir || '.';
 
-  if (rootDir.endsWith('/')) {
-    rootDir = rootDir.slice(0, -1);
+  if (rootPath.endsWith('/')) {
+    rootPath = rootPath.slice(0, -1);
   }
 
   Promise.all([
-    requireFile(`${rootDir}/package.json`),
-    requireFile(`${rootDir}/npm-shrinkwrap.json`),
+    requireFile(`${rootPath}/package.json`),
+    requireFile(`${rootPath}/npm-shrinkwrap.json`),
     runCommand('npm ls --depth=0 --json')
   ]).then(checkDependencyLists).catch((err) => {
     console.log(err);
