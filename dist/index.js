@@ -88,7 +88,7 @@ exports['default'] = function (opts) {
   }
   rootPath = process.cwd() + '/' + rootPath;
 
-  _promise2['default'].all([(0, _utils.requireFile)(rootPath + '/package.json'), (0, _utils.requireFile)(rootPath + '/npm-shrinkwrap.json'), (0, _utils.runCommand)('npm ls --depth=0 --json')]).then(checkDependencyLists)['catch'](function (err) {
+  _promise2['default'].all([(0, _utils.requireFile)(rootPath + '/package.json'), (0, _utils.requireFile)(rootPath + '/npm-shrinkwrap.json'), (0, _utils.npmListDependencies)()]).then(checkDependencyLists)['catch'](function (err) {
     console.log(err);
     process.exit(1);
   });

@@ -27,7 +27,7 @@ gulp.task('file-path-lint', () => {
 });
 
 gulp.task('eslint', () => {
-  return gulp.src([ './**/*.js', '!./dist/**/*', '!./example/**/*' ])
+  return gulp.src([ './**/*.js', '!./node_modules/**/*', '!./dist/**/*', '!./example/**/*' ])
              .pipe(plugin.eslint({ configFile: './config/eslint.json' }))
               // Binding a function on data event is a workaround to gulp-eslint issue #36
              .pipe(plugin.eslint.format().on('data', _.noop));

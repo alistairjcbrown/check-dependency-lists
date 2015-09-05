@@ -1,6 +1,6 @@
-import { exec } from 'child_process';
-import Promise from 'promise';
 import _ from 'underscore';
+import npm from 'npm';
+import Promise from 'promise';
 
 const requireFile = (path) => {
   return new Promise((resolve, reject) => {
@@ -13,15 +13,18 @@ const requireFile = (path) => {
   });
 };
 
-const runCommand = (command) => {
+const npmListDependencies = () => {
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout) => {
-      try {
-        const value = JSON.parse(stdout);
-        resolve(value);
-      } catch(e) {
-        reject(e);
+    npm.load({}, function (loadErr) {
+      if (loadErr) {
+        return reject(loadErr);
       }
+      npm.commands.ls([], true, function(lsErr, project, value) {
+        if (lsErr) {
+          return reject(lsErr);
+        }
+        resolve(value);
+      });
     });
   });
 };
@@ -69,7 +72,7 @@ const generateDependencyList = (dependencySources) => {
 };
 
 export default {
-  requireFile, runCommand,
+  requireFile, npmListDependencies,
   flattenDependencySource,
   generateDependencyObject, generateDependencyList
 };

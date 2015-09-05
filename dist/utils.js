@@ -8,15 +8,17 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _child_process = require('child_process');
+var _underscore = require('underscore');
+
+var _underscore2 = _interopRequireDefault(_underscore);
+
+var _npm = require('npm');
+
+var _npm2 = _interopRequireDefault(_npm);
 
 var _promise = require('promise');
 
 var _promise2 = _interopRequireDefault(_promise);
-
-var _underscore = require('underscore');
-
-var _underscore2 = _interopRequireDefault(_underscore);
 
 var requireFile = function requireFile(path) {
   return new _promise2['default'](function (resolve, reject) {
@@ -29,15 +31,18 @@ var requireFile = function requireFile(path) {
   });
 };
 
-var runCommand = function runCommand(command) {
+var npmListDependencies = function npmListDependencies() {
   return new _promise2['default'](function (resolve, reject) {
-    (0, _child_process.exec)(command, function (error, stdout) {
-      try {
-        var value = JSON.parse(stdout);
-        resolve(value);
-      } catch (e) {
-        reject(e);
+    _npm2['default'].load({}, function (loadErr) {
+      if (loadErr) {
+        return reject(loadErr);
       }
+      _npm2['default'].commands.ls([], true, function (lsErr, project, value) {
+        if (lsErr) {
+          return reject(lsErr);
+        }
+        resolve(value);
+      });
     });
   });
 };
@@ -97,7 +102,7 @@ var generateDependencyList = function generateDependencyList(dependencySources) 
 };
 
 exports['default'] = {
-  requireFile: requireFile, runCommand: runCommand,
+  requireFile: requireFile, npmListDependencies: npmListDependencies,
   flattenDependencySource: flattenDependencySource,
   generateDependencyObject: generateDependencyObject, generateDependencyList: generateDependencyList
 };

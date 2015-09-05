@@ -2,7 +2,7 @@ import _ from 'underscore';
 import Promise from 'promise';
 import semver from 'semver';
 import {
-  requireFile, runCommand,
+  requireFile, npmListDependencies,
   flattenDependencySource,
   generateDependencyList
 } from './utils';
@@ -66,7 +66,7 @@ export default (opts) => {
   Promise.all([
     requireFile(`${rootPath}/package.json`),
     requireFile(`${rootPath}/npm-shrinkwrap.json`),
-    runCommand('npm ls --depth=0 --json')
+    npmListDependencies()
   ]).then(checkDependencyLists).catch((err) => {
     console.log(err);
     process.exit(1);
