@@ -35,9 +35,21 @@ var getMissingDepdencies = function getMissingDepdencies(dependencies) {
   }, []);
 };
 
+var getNonSemVerDepdencies = function getNonSemVerDepdencies(dependencies) {
+  return _underscore2['default'].reduce(dependencies, function (nonSemVer, dependency) {
+    var packagejson = dependency.version.packagejson;
+
+    if (packagejson !== null && !_semver2['default'].satisfies('0.0.0', '0 || ' + packagejson)) {
+      nonSemVer.push(dependency);
+    }
+    return nonSemVer;
+  }, []);
+};
+
 var getBadVersionDependencies = function getBadVersionDependencies(dependencies) {
   var missing = getMissingDepdencies(dependencies);
-  var validDependencies = _underscore2['default'].difference(dependencies, missing);
+  var nonSemVer = getNonSemVerDepdencies(dependencies);
+  var validDependencies = _underscore2['default'].difference(dependencies, missing, nonSemVer);
 
   return _underscore2['default'].reduce(validDependencies, function (badVersions, dependency) {
     var _dependency$version = dependency.version;
@@ -71,6 +83,12 @@ var checkDependencyLists = function checkDependencyLists(opts, _ref) {
     _logger2['default'].error('There are dependencies which are not present in all dependency lists');
     _logger2['default'].error(missing, { pretty: true });
     fail = true;
+  }
+
+  var nonSemVer = getNonSemVerDepdencies(dependencyList);
+  if (nonSemVer.length > 0) {
+    _logger2['default'].warning('WARNING: There are dependencies which do not have valid semantic versioning');
+    _logger2['default'].warning(_underscore2['default'].pluck(nonSemVer, 'name').join(', '));
   }
 
   var badVersion = getBadVersionDependencies(dependencyList);

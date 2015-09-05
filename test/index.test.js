@@ -20,7 +20,8 @@ const mockedNpm = {
   }
 };
 const mockedLogger = {
-  error: sinon.stub()
+  error: sinon.stub(),
+  warning: sinon.stub()
 };
 
 describe('Check Dependency Lists', function() {
@@ -34,6 +35,7 @@ describe('Check Dependency Lists', function() {
 
   afterEach(function() {
     mockedLogger.error.reset();
+    mockedLogger.warning.reset();
   });
 
   it('should exist', function() {
@@ -42,14 +44,14 @@ describe('Check Dependency Lists', function() {
 
   describe('error conditions', function() {
     let errorStates = {
-      'install-mismatch': 'only been installed',
-      'package-mismatch': 'only been saved to package.json',
-      'shrinkwrap-mismatch': 'only been saved to npm-shrinkwrap.json',
-      'version-mismatch': 'a version which differes from the package.json'
+      'install-mismatch': 'has only been installed',
+      'package-mismatch': 'has only been saved to package.json',
+      'shrinkwrap-mismatch': 'has only been saved to npm-shrinkwrap.json',
+      'version-mismatch': 'has a version which differes from the package.json'
     };
 
     _.each(errorStates, (description, mismatchType) => {
-      describe(`when a dependency has ${description}`, function() {
+      describe(`when a dependency ${description}`, function() {
         beforeEach(function(done) {
           env.installed = require(`./fixtures/${mismatchType}/installed.json`);
           env.expectedOutput = require(`./fixtures/${mismatchType}/output.json`);
@@ -62,7 +64,7 @@ describe('Check Dependency Lists', function() {
           });
         });
 
-        it('should output mismatched dependency details', function() {
+        it('should output error with dependency details', function() {
           expect(mockedLogger.error).to.have.callCount(2);
           expect(mockedLogger.error.getCall(1).args[0][0]).to.deep.equal(env.expectedOutput);
         });
@@ -74,11 +76,29 @@ describe('Check Dependency Lists', function() {
     });
   });
 
-  // describe('error conditions', function() {
-  //   describe('when a dependency does not have a valid semantic version', function() {
-  //     it('should output a warning');
-  //   });
-  // });
+  describe('warning conditions', function() {
+    let warningStates = {
+      'invalid-version': 'does not have a valid semantic version'
+    };
+
+    _.each(warningStates, (description, mismatchType) => {
+      describe(`when a dependency ${description}`, function() {
+        beforeEach(function(done) {
+          env.installed = require(`./fixtures/${mismatchType}/installed.json`);
+          env.expectedOutput = require(`./fixtures/${mismatchType}/output.json`);
+          env.checkDependencyLists({
+            rootDir: `test/fixtures/${mismatchType}`,
+            callback: done
+          });
+        });
+
+        it('should output warning with dependency details', function() {
+          expect(mockedLogger.warning).to.have.callCount(2);
+          expect(mockedLogger.warning.getCall(1).args[0]).to.equal(env.expectedOutput);
+        });
+      });
+    });
+  });
 
   describe('success condition', function() {
     describe('when there are no dependency mismatches', function() {

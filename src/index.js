@@ -17,9 +17,20 @@ const getMissingDepdencies = (dependencies) => {
   }, []);
 };
 
+const getNonSemVerDepdencies = (dependencies) => {
+  return _.reduce(dependencies, (nonSemVer, dependency) => {
+    const { version: { packagejson } } = dependency;
+    if (packagejson !== null && !semver.satisfies('0.0.0', `0 || ${packagejson}`)) {
+      nonSemVer.push(dependency);
+    }
+    return nonSemVer;
+  }, []);
+};
+
 const getBadVersionDependencies = (dependencies) => {
   const missing = getMissingDepdencies(dependencies);
-  const validDependencies = _.difference(dependencies, missing);
+  const nonSemVer = getNonSemVerDepdencies(dependencies);
+  const validDependencies = _.difference(dependencies, missing, nonSemVer);
 
   return _.reduce(validDependencies, (badVersions, dependency) => {
     const { version: { packagejson, installed, npmshrinkwrap } } = dependency;
@@ -43,6 +54,12 @@ const checkDependencyLists = (opts, [ packagejson, npmshrinkwrap, installed ]) =
     logger.error('There are dependencies which are not present in all dependency lists');
     logger.error(missing, { pretty: true });
     fail = true;
+  }
+
+  const nonSemVer = getNonSemVerDepdencies(dependencyList);
+  if (nonSemVer.length > 0) {
+    logger.warning('WARNING: There are dependencies which do not have valid semantic versioning');
+    logger.warning(_.pluck(nonSemVer, 'name').join(', '));
   }
 
   const badVersion = getBadVersionDependencies(dependencyList);

@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-const error = (data, opts) => {
+const log = (data, opts) => {
   let output = data;
 
   if (_.isObject(opts) && opts.pretty === true) {
@@ -10,4 +10,12 @@ const error = (data, opts) => {
   console.log(output);
 };
 
-export default { error };
+const error = (...args) => {
+  log.apply(null, args);
+};
+
+const warning = (...args) => {
+  log.apply(null, args);
+};
+
+export default { error, warning };
