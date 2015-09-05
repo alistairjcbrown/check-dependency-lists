@@ -1,0 +1,13 @@
+{
+  "name": "lodash",
+  "presence": {
+    "packagejson": false,
+    "npmshrinkwrap": true,
+    "installed": false
+  },
+  "version": {
+    "packagejson": null,
+    "npmshrinkwrap": "3.10.1",
+    "installed": null
+  }
+}

@@ -63,5 +63,5 @@ gulp.task('build', (callback) => {
 gulp.task('test', [ 'mocha' ]);
 
 gulp.task('default', (callback) => {
-  runSequence('lint', 'build', 'test', callback);
+  runSequence('build', 'lint', 'test', callback);
 });

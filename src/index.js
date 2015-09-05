@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import Promise from 'promise';
 import semver from 'semver';
+import logger from './logger';
 import {
   requireFile, npmListDependencies,
   flattenDependencySource,
@@ -29,8 +30,9 @@ const getBadVersionDependencies = (dependencies) => {
   }, []);
 };
 
-const checkDependencyLists = ([ packagejson, npmshrinkwrap, installed ]) => {
+const checkDependencyLists = (opts, [ packagejson, npmshrinkwrap, installed ]) => {
   let fail = false;
+
   const packagejsonDependencies = _.extend({}, packagejson.dependencies, packagejson.devDependencies);
   const npmshrinkwrapDependencies = flattenDependencySource(npmshrinkwrap);
   const installedDependencies = flattenDependencySource(installed);
@@ -38,25 +40,34 @@ const checkDependencyLists = ([ packagejson, npmshrinkwrap, installed ]) => {
 
   const missing = getMissingDepdencies(dependencyList);
   if (missing.length > 0) {
-    console.log('There are dependencies which are not present in all dependency lists');
-    console.log(JSON.stringify(missing, null, 4));
+    logger.error('There are dependencies which are not present in all dependency lists');
+    logger.error(missing, { pretty: true });
     fail = true;
   }
 
   const badVersion = getBadVersionDependencies(dependencyList);
   if (badVersion.length > 0) {
-    console.log('There are dependencies which do not satisfy the version range set in the "package.json" file');
-    console.log(JSON.stringify(badVersion, null, 4));
+    logger.error('There are dependencies which do not satisfy the version range set in the "package.json" file');
+    logger.error(badVersion, { pretty: true });
     fail = true;
   }
 
   if (fail) {
-    throw new Error('Dependency check failed');
+    let error = new Error('Dependency check failed');
+    if (_.isFunction(opts.callback)) {
+      return opts.callback(error);
+    }
+
+    throw error;
+  }
+
+  if (_.isFunction(opts.callback)) {
+    return opts.callback();
   }
 };
 
-export default (opts) => {
-  let rootPath = _.isObject(opts) ? opts.rootDir : '.';
+export default (opts = {}) => {
+  let rootPath = opts.rootDir || '.';
 
   if (rootPath.slice(-1) === '/') {
     rootPath = rootPath.slice(0, -1);
@@ -67,8 +78,8 @@ export default (opts) => {
     requireFile(`${rootPath}/package.json`),
     requireFile(`${rootPath}/npm-shrinkwrap.json`),
     npmListDependencies()
-  ]).then(checkDependencyLists).catch((err) => {
-    console.log(err);
+  ]).then(_.partial(checkDependencyLists, opts)).catch((err) => {
+    logger.error(err);
     process.exit(1);
   });
 };

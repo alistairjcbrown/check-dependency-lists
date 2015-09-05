@@ -20,6 +20,10 @@ var _semver = require('semver');
 
 var _semver2 = _interopRequireDefault(_semver);
 
+var _logger = require('./logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 var _utils = require('./utils');
 
 var getMissingDepdencies = function getMissingDepdencies(dependencies) {
@@ -48,7 +52,7 @@ var getBadVersionDependencies = function getBadVersionDependencies(dependencies)
   }, []);
 };
 
-var checkDependencyLists = function checkDependencyLists(_ref) {
+var checkDependencyLists = function checkDependencyLists(opts, _ref) {
   var _ref2 = _slicedToArray(_ref, 3);
 
   var packagejson = _ref2[0];
@@ -56,6 +60,7 @@ var checkDependencyLists = function checkDependencyLists(_ref) {
   var installed = _ref2[2];
 
   var fail = false;
+
   var packagejsonDependencies = _underscore2['default'].extend({}, packagejson.dependencies, packagejson.devDependencies);
   var npmshrinkwrapDependencies = (0, _utils.flattenDependencySource)(npmshrinkwrap);
   var installedDependencies = (0, _utils.flattenDependencySource)(installed);
@@ -63,33 +68,44 @@ var checkDependencyLists = function checkDependencyLists(_ref) {
 
   var missing = getMissingDepdencies(dependencyList);
   if (missing.length > 0) {
-    console.log('There are dependencies which are not present in all dependency lists');
-    console.log(JSON.stringify(missing, null, 4));
+    _logger2['default'].error('There are dependencies which are not present in all dependency lists');
+    _logger2['default'].error(missing, { pretty: true });
     fail = true;
   }
 
   var badVersion = getBadVersionDependencies(dependencyList);
   if (badVersion.length > 0) {
-    console.log('There are dependencies which do not satisfy the version range set in the "package.json" file');
-    console.log(JSON.stringify(badVersion, null, 4));
+    _logger2['default'].error('There are dependencies which do not satisfy the version range set in the "package.json" file');
+    _logger2['default'].error(badVersion, { pretty: true });
     fail = true;
   }
 
   if (fail) {
-    throw new Error('Dependency check failed');
+    var error = new Error('Dependency check failed');
+    if (_underscore2['default'].isFunction(opts.callback)) {
+      return opts.callback(error);
+    }
+
+    throw error;
+  }
+
+  if (_underscore2['default'].isFunction(opts.callback)) {
+    return opts.callback();
   }
 };
 
-exports['default'] = function (opts) {
-  var rootPath = _underscore2['default'].isObject(opts) ? opts.rootDir : '.';
+exports['default'] = function () {
+  var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  var rootPath = opts.rootDir || '.';
 
   if (rootPath.slice(-1) === '/') {
     rootPath = rootPath.slice(0, -1);
   }
   rootPath = process.cwd() + '/' + rootPath;
 
-  _promise2['default'].all([(0, _utils.requireFile)(rootPath + '/package.json'), (0, _utils.requireFile)(rootPath + '/npm-shrinkwrap.json'), (0, _utils.npmListDependencies)()]).then(checkDependencyLists)['catch'](function (err) {
-    console.log(err);
+  _promise2['default'].all([(0, _utils.requireFile)(rootPath + '/package.json'), (0, _utils.requireFile)(rootPath + '/npm-shrinkwrap.json'), (0, _utils.npmListDependencies)()]).then(_underscore2['default'].partial(checkDependencyLists, opts))['catch'](function (err) {
+    _logger2['default'].error(err);
     process.exit(1);
   });
 };

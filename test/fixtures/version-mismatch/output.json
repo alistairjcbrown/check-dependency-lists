@@ -1,0 +1,13 @@
+{
+  "name": "jquery",
+  "presence": {
+    "packagejson": true,
+    "npmshrinkwrap": true,
+    "installed": true
+  },
+  "version": {
+    "packagejson": "~1.8.2",
+    "npmshrinkwrap": "2.1.4",
+    "installed": "2.1.4"
+  }
+}
