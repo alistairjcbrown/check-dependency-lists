@@ -6,7 +6,8 @@ export default {
   'directory-name': [ /^[a-z0-9-]+$/ ],
   'directory-index': {
     ignore: [
-      /config$/
+      /config$/,
+      /fixtures\/(.*?)$/
     ]
   }
 };

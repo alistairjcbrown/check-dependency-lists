@@ -4,6 +4,7 @@ import gulpPlugin from 'gulp-load-plugins';
 import runSequence from 'run-sequence';
 import vinylPaths from 'vinyl-paths';
 import del from 'del';
+import babel from 'babel/register';
 import filePathLintConfig from './filepath-lint';
 
 const plugin = gulpPlugin({
@@ -41,6 +42,7 @@ gulp.task('transpile', () => {
 gulp.task('mocha', () => {
   return gulp.src([ './test/**/*.test.js' ])
              .pipe(plugin.mocha({
+                compilers: { js: babel },
                 reporter: 'spec'
               }));
 });

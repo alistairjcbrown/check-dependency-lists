@@ -1,0 +1,27 @@
+{
+  "name": "no-mismatch-fixture",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Fixture for no mismatch test",
+  "author": "Alistair Brown <npm@alistairjcbrown.com> (http://alistairjcbrown.com/)",
+  "main": "index.js",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alistairjcbrown/check-dependency-lists"
+  },
+  "bugs": {
+    "url": "https://github.com/alistairjcbrown/check-dependency-lists/issues"
+  },
+  "homepage": "https://github.com/alistairjcbrown/check-dependency-lists#readme",
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "promise": "~7.0.4",
+    "underscore": "~1.8.3"
+  },
+  "devDependencies": {
+    "del": "~2.0.1",
+    "vinyl-paths": "~2.0.0"
+  }
+}
+
