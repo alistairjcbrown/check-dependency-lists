@@ -1,7 +1,7 @@
 # Check Dependency Lists
 
 [![Build Status](https://travis-ci.org/alistairjcbrown/check-dependency-lists.svg?branch=master)](https://travis-ci.org/alistairjcbrown/check-dependency-lists)
-[![GitHub version](https://badge.fury.io/gh/alistairjcbrown%2Fcheck-dependency-lists.svg)](http://badge.fury.io/gh/alistairjcbrown%2Fcheck-dependency-lists)
+[![npm version](https://badge.fury.io/js/check-dependency-lists.svg)](http://badge.fury.io/js/check-dependency-lists)
 [![Dependency Status](https://david-dm.org/alistairjcbrown/check-dependency-lists.svg?theme=shields.io)](https://david-dm.org/alistairjcbrown/check-dependency-lists)
 [![devDependency Status](https://david-dm.org/alistairjcbrown/check-dependency-lists/dev-status.svg?theme=shields.io)](https://david-dm.org/alistairjcbrown/check-dependency-lists#info=devDependencies)
 

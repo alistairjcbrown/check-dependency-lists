@@ -14,11 +14,6 @@ const plugin = gulpPlugin({
   }
 });
 
-gulp.task('dependency-lint', () => {
-  const checkDependencyLists = require('../');
-  return checkDependencyLists();
-});
-
 gulp.task('file-path-lint', () => {
   return gulp.src([ './**/*.*', '!./node_modules/**/*' ])
              .pipe(plugin.filepathlint(filePathLintConfig))
@@ -54,7 +49,7 @@ gulp.task('clean-dist', () => {
 
 // ---
 
-gulp.task('lint', [ 'dependency-lint', 'file-path-lint', 'eslint' ]);
+gulp.task('lint', [ 'file-path-lint', 'eslint' ]);
 
 gulp.task('build', (callback) => {
   runSequence('clean-dist', 'transpile', callback);
