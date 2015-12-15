@@ -44,7 +44,6 @@ describe('Check Dependency Lists', function() {
 
   describe('error conditions', function() {
     let errorStates = {
-      'install-mismatch': 'has only been installed',
       'package-mismatch': 'has only been saved to package.json',
       'shrinkwrap-mismatch': 'has only been saved to npm-shrinkwrap.json',
       'version-mismatch': 'has a version which differes from the package.json'
@@ -100,18 +99,25 @@ describe('Check Dependency Lists', function() {
     });
   });
 
-  describe('success condition', function() {
-    describe('when there are no dependency mismatches', function() {
-      beforeEach(function(done) {
-        env.installed = require('./fixtures/no-mismatch/installed.json');
-        env.checkDependencyLists({
-          rootDir: 'test/fixtures/no-mismatch',
-          callback: done
-        });
-      });
+  describe('success conditions', function() {
+    let successStates = {
+      'install-mismatch': 'only install mismatches',
+      'no-mismatch': 'no dependency mismatches'
+    };
 
-      it('should output nothing', function() {
-        expect(mockedLogger.error).to.have.callCount(0);
+    _.each(successStates, (description, mismatchType) => {
+      describe(`when there are ${description}`, function() {
+        beforeEach(function(done) {
+          env.installed = require(`./fixtures/${mismatchType}/installed.json`);
+          env.checkDependencyLists({
+            rootDir: `test/fixtures/${mismatchType}`,
+            callback: done
+          });
+        });
+
+        it('should output nothing', function() {
+          expect(mockedLogger.error).to.have.callCount(0);
+        });
       });
     });
   });
