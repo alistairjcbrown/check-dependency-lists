@@ -55,8 +55,8 @@ gulp.task('build', (callback) => {
   runSequence('clean-dist', 'transpile', callback);
 });
 
-gulp.task('test', [ 'mocha' ]);
+gulp.task('test', [ 'lint', 'mocha' ]);
 
 gulp.task('default', (callback) => {
-  runSequence('build', 'lint', 'test', callback);
+  runSequence('build', 'test', callback);
 });
