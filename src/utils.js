@@ -64,7 +64,7 @@ const generateDependencyList = (dependencySources) => {
   const npmshrinkwrapSpecificDependencies = _.difference(npmshrinkwrapDependenciesList, packagejsonDependenciesList);
   dependencies = dependencies.concat(_.map(npmshrinkwrapSpecificDependencies, _.partial(generateDependencyObject, dependencySources)));
 
-  const installedSpecificDependencies = _.difference(installedDependenciesList, packagejsonDependenciesList);
+  const installedSpecificDependencies = _.difference(packagejsonDependenciesList, installedDependenciesList);
   dependencies = dependencies.concat(_.map(installedSpecificDependencies, _.partial(generateDependencyObject, dependencySources)));
 
   dependencies = _.sortBy(dependencies, 'name');

@@ -92,7 +92,7 @@ var generateDependencyList = function generateDependencyList(dependencySources) 
   var npmshrinkwrapSpecificDependencies = _underscore2['default'].difference(npmshrinkwrapDependenciesList, packagejsonDependenciesList);
   dependencies = dependencies.concat(_underscore2['default'].map(npmshrinkwrapSpecificDependencies, _underscore2['default'].partial(generateDependencyObject, dependencySources)));
 
-  var installedSpecificDependencies = _underscore2['default'].difference(installedDependenciesList, packagejsonDependenciesList);
+  var installedSpecificDependencies = _underscore2['default'].difference(packagejsonDependenciesList, installedDependenciesList);
   dependencies = dependencies.concat(_underscore2['default'].map(installedSpecificDependencies, _underscore2['default'].partial(generateDependencyObject, dependencySources)));
 
   dependencies = _underscore2['default'].sortBy(dependencies, 'name');
